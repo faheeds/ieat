@@ -3,10 +3,13 @@ import streamlit as st
 import requests
 
 def get_recipe_from_openai(dish_name):
+    # Access the API key from Streamlit secrets
+    api_key = st.secrets["OPENAI_API_KEY"]
+
     # Define your OpenAI API endpoint and authentication
-    endpoint = "https://api.openai.com/search"  # This is a pseudo-endpoint; replace with the actual endpoint
+    endpoint = "https://api.openai.com/search"  # Replace with the actual endpoint
     headers = {
-        "Authorization": "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"
+        "Authorization": api_key
     }
     # Define your search query
     query = {
