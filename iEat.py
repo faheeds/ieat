@@ -2,7 +2,7 @@ import streamlit as st
 import openai
 
 # Initialize the OpenAI API with your key from Streamlit secrets
-openai.api_key = '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'
+openai.api_key = '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'
 
 def get_recipe_from_openai(dish_name):
     # Construct the message to get a recipe
