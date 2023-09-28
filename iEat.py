@@ -19,6 +19,7 @@ def get_recipe_from_openai(dish_name):
     # Make the API call
     response = requests.get(endpoint, headers=headers, params=query)
     st.write(f"API Response: {response.json()}")  # Add this line to print the response to the Streamlit app
+    
     # Check for successful response
     if response.status_code == 200:
         results = response.json().get("results", [])
