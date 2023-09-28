@@ -1,46 +1,37 @@
-# app.py
 import streamlit as st
-import requests
+import openai
+
+# Initialize the OpenAI API with your key from Streamlit secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def get_recipe_from_openai(dish_name):
-    # Access the API key from Streamlit secrets
-    api_key = st.secrets["OPENAI_API_KEY"]
+    # Construct the message to get a recipe
+    message = {
+        'role': 'user',
+        'content': f"Please provide a detailed recipe for {dish_name}."
+    }
 
-    # Define your OpenAI API endpoint and authentication
-    endpoint = "https://api.openai.com/search"  # Replace with the actual endpoint
-    headers = {
-        "Authorization": api_key
-    }
-    # Define your search query
-    query = {
-        "q": f"{dish_name} recipe",
-        "size": 2  # get top 2 results
-    }
-    # Make the API call
-    response = requests.get(endpoint, headers=headers, params=query)
-    st.write(f"API Response: {response.json()}")  # Add this line to print the response to the Streamlit app
+    # Get the response from the OpenAI model
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[message]
+    )
     
-    # Check for successful response
-    if response.status_code == 200:
-        results = response.json().get("results", [])
-        if not results:
-            return None
-        else:
-            # Extract the top 2 recipes (assuming there's a "recipe" field in the response)
-            top_recipes = [result.get("recipe") for result in results[:2]]
-            return top_recipes
-    else:
-        print("Error:", response.status_code)
-        return None
+    # Extract the recipe from the response
+    recipe = response.choices[0].message['content'].strip()
+    
+    # Return the recipe or None if not found
+    return recipe if recipe else None
 
 def main():
     st.title("Recipe Finder")
+    
     dish_name = st.text_input("Enter the name of the dish:")
     if st.button("Get Recipe"):
-        recipes = get_recipe_from_openai(dish_name)
-        if recipes:
-            for idx, recipe in enumerate(recipes, 1):
-                st.write(f"Recipe {idx}:\n{recipe}\n")
+        recipe = get_recipe_from_openai(dish_name)
+        
+        if recipe:
+            st.write(f"Recipe for {dish_name}:\n{recipe}\n")
         else:
             st.write("No recipe found!")
 
