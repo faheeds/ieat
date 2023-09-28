@@ -1,8 +1,8 @@
-import streamlit as st
+mport streamlit as st
 import openai
 
 # Initialize the OpenAI API with your key from Streamlit secrets
-openai.api_key = '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'
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def get_recipe_from_openai(dish_name):
     # Construct the message to get a recipe
@@ -16,24 +16,21 @@ def get_recipe_from_openai(dish_name):
         model="gpt-3.5-turbo",
         messages=[message]
     )
-    
+
     # Extract the recipe from the response
     recipe = response.choices[0].message['content'].strip()
-    
+
     # Return the recipe or None if not found
     return recipe if recipe else None
 
 def main():
     st.title("Recipe Finder")
-    
+
     dish_name = st.text_input("Enter the name of the dish:")
     if st.button("Get Recipe"):
         recipe = get_recipe_from_openai(dish_name)
-        
+
         if recipe:
             st.write(f"Recipe for {dish_name}:\n{recipe}\n")
         else:
             st.write("No recipe found!")
-
-if __name__ == "__main__":
-    main()
